@@ -1,6 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useState } from 'react'
-import { BLOQUES, db, diasRestantes, exportarBackup, importarBackup, type Perfil, type Suplemento } from '../db'
+import { BLOQUES, bloquesDe, db, diasRestantes, exportarBackup, importarBackup, type Perfil, type Suplemento } from '../db'
 import { ahoraLocal, ddmmaaaa } from '../logica/fechas'
 
 const hhmm = (min: number) => `${String(Math.floor(min / 60)).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`
@@ -63,7 +63,10 @@ function FichaSuplemento({ s, habitos }: { s: Suplemento; habitos: { id: number;
   )
 }
 
-export function Ajustes({ perfil }: { perfil: Perfil }) {
+export function Ajustes({ perfil, hoy }: { perfil: Perfil; hoy: string }) {
+  const bloques = bloquesDe(perfil)
+  const pausas = useLiveQuery(() => db.pausas.toArray().then((ps) => ps.sort((a, b) => b.desde.localeCompare(a.desde))), [], [])
+  const [pausa, setPausa] = useState({ desde: hoy, hasta: hoy, motivo: '' })
   const suplementos = useLiveQuery(() => db.suplementos.toArray(), [], [])
   const habitos = useLiveQuery(() => db.habitos.filter((h) => !h.archivado).toArray(), [], [])
   const [pendiente, setPendiente] = useState<{ json: unknown; exportadoEn?: string } | null>(null)
@@ -71,7 +74,7 @@ export function Ajustes({ perfil }: { perfil: Perfil }) {
   const up = (c: Partial<Perfil>) => db.perfil.update('yo', c)
 
   function moverBloque(i: number, d: -1 | 1) {
-    const b = [...perfil.bloques]
+    const b = [...bloques]
     ;[b[i], b[i + d]] = [b[i + d], b[i]]
     up({ bloques: b })
   }
@@ -143,19 +146,52 @@ export function Ajustes({ perfil }: { perfil: Perfil }) {
       <section aria-labelledby="t-bloques">
         <h2 id="t-bloques">Pantalla Hoy</h2>
         <ul className="lista bloques">
-          {perfil.bloques.map((b, i) => (
+          {bloques.map((b, i) => (
             <li key={b.id}>
               <label className="interruptor">
-                <input type="checkbox" checked={b.visible} onChange={(e) => up({ bloques: perfil.bloques.map((x) => (x.id === b.id ? { ...x, visible: e.target.checked } : x)) })} />
+                <input type="checkbox" checked={b.visible} onChange={(e) => up({ bloques: bloques.map((x) => (x.id === b.id ? { ...x, visible: e.target.checked } : x)) })} />
                 {BLOQUES[b.id]}
               </label>
               <span className="orden">
                 <button aria-label={`Subir ${BLOQUES[b.id]}`} disabled={i === 0} onClick={() => moverBloque(i, -1)}>↑</button>
-                <button aria-label={`Bajar ${BLOQUES[b.id]}`} disabled={i === perfil.bloques.length - 1} onClick={() => moverBloque(i, 1)}>↓</button>
+                <button aria-label={`Bajar ${BLOQUES[b.id]}`} disabled={i === bloques.length - 1} onClick={() => moverBloque(i, 1)}>↓</button>
               </span>
             </li>
           ))}
         </ul>
+      </section>
+
+      <section aria-labelledby="t-pausa">
+        <h2 id="t-pausa">Modo pausa</h2>
+        <p className="ayuda">Para vacaciones o si te enfermás: durante la pausa las rachas y las metas no se evalúan y nada se corta.</p>
+        <div className="fila-campos">
+          <label>Desde<input type="date" value={pausa.desde} onChange={(e) => setPausa({ ...pausa, desde: e.target.value })} /></label>
+          <label>Hasta<input type="date" value={pausa.hasta} min={pausa.desde} onChange={(e) => setPausa({ ...pausa, hasta: e.target.value })} /></label>
+        </div>
+        <label>Motivo (opcional)<input value={pausa.motivo} placeholder="Vacaciones" onChange={(e) => setPausa({ ...pausa, motivo: e.target.value })} /></label>
+        <button className="secundario" disabled={!pausa.desde || !pausa.hasta || pausa.hasta < pausa.desde}
+          onClick={async () => { await db.pausas.add({ desde: pausa.desde, hasta: pausa.hasta, motivo: pausa.motivo.trim() || undefined }); setPausa({ desde: hoy, hasta: hoy, motivo: '' }) }}>
+          Agregar pausa
+        </button>
+        {pausas.length > 0 && (
+          <ul className="lista historial">
+            {pausas.map((p) => (
+              <li key={p.id}>
+                <span className="texto"><strong>Del {ddmmaaaa(p.desde)} al {ddmmaaaa(p.hasta)}</strong>{p.motivo && <small>{p.motivo}</small>}</span>
+                <button className="link peligro" onClick={() => confirm('¿Borrar esta pausa?') && db.pausas.delete(p.id)}>Borrar</button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section aria-labelledby="t-comodines">
+        <h2 id="t-comodines">Comodines</h2>
+        <label className="interruptor">
+          <input type="checkbox" checked={!!perfil.comodinAuto} onChange={(e) => up({ comodinAuto: e.target.checked })} />
+          Usarlos solos cuando un día sin cumplir corta una racha
+        </label>
+        <small className="ayuda">Si está apagado, los usás vos desde Hoy, yendo al día que quedó sin cumplir.</small>
       </section>
 
       <section aria-labelledby="t-suplementos">

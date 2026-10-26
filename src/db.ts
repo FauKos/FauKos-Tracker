@@ -1,12 +1,17 @@
 import { Dexie, type EntityTable } from 'dexie'
 import { cumple } from './logica/habitos'
+import { macrosDe, normalizar, type Macros, type Momento } from './logica/nutricion'
 
 export type Frecuencia = 'diaria' | 'x_por_semana' | 'dias_fijos'
-export type BloqueId = 'habitos' | 'agua' | 'sueno' | 'animo'
+export type BloqueId = 'habitos' | 'agua' | 'sueno' | 'nutricion' | 'animo' | 'peso'
+export type ClaveHabito = 'agua' | 'gimnasio' | 'proteina'
+export type Sexo = 'hombre' | 'mujer'
+export type Actividad = 'sedentario' | 'ligero' | 'moderado' | 'alto' | 'muy_alto'
+export type Objetivo = 'definir' | 'mantener' | 'volumen'
 
 export interface Habito {
   id: number
-  clave?: 'agua' // el hábito que muestra el bloque de Agua
+  clave?: ClaveHabito // hábitos con comportamiento propio (bloque de Agua, proteína desde las comidas, logros de gimnasio)
   nombre: string
   icono: string
   color: string
@@ -19,6 +24,8 @@ export interface Habito {
   vecesPorSemana: number
   orden: number
   archivado: boolean
+  desde?: string // día en que se creó; sin dato = desde siempre
+  archivadoEn?: string
 }
 
 export interface RegistroHabito { id: number; habitoId: number; fecha: string; valor: number; nota?: string; creadoEn: string }
@@ -54,7 +61,45 @@ export interface Perfil {
   metaSuenoMin: number
   bloques: { id: BloqueId; visible: boolean }[]
   ultimoBackup?: string
+  sexo?: Sexo
+  nacimiento?: string
+  alturaCm?: number
+  actividad?: Actividad
+  objetivo?: Objetivo
+  ajusteKcal?: number // déficit o superávit
+  proteinaGKg?: number
+  grasasGKg?: number
+  pesoObjetivo?: number
+  ritmoSemanal?: number // kg por semana, negativo para bajar
+  comodinAuto?: boolean
+  ultimoComodinAuto?: string
 }
+
+export interface RegistroPeso { id: number; fecha: string; kg: number; nota?: string }
+export interface RegistroMedidas { id: number; fecha: string; cintura?: number; cadera?: number; pecho?: number; brazo?: number; muslo?: number; grasaPct?: number }
+
+export interface Porcion { nombre: string; gramos: number }
+export interface Alimento {
+  id: number
+  nombre: string
+  marca?: string
+  por100: Macros
+  porciones: Porcion[]
+  origen: 'propio' | 'receta'
+  favorito: boolean
+  receta?: { ingredientes: { alimentoId: number; gramos: number }[]; porciones: number }
+}
+export interface Item { alimentoId: number; gramos: number; cantidad: number; unidad: string }
+export interface RegistroComida extends Item, Macros { id: number; fecha: string; momento: Momento; nombre: string }
+export interface ComidaFrecuente { id: number; nombre: string; momento: Momento; items: Item[] }
+export interface MetasNutricion { id: number; desde: string; kcal: number; proteinaG: number; carbosG: number; grasasG: number; tdee?: number; origen: 'formula' | 'manual' }
+
+export interface Recompensa { id: number; nombre: string; costo: number; icono: string; repetible: boolean }
+export interface Canje { id: number; recompensaId: number; nombre: string; fecha: string; costo: number }
+export interface Logro { clave: string; desbloqueadoEn: string }
+export interface UsoComodin { id: number; habitoId: number; fecha: string; usadoEn: string } // fecha = día que cubre
+export interface Pausa { id: number; desde: string; hasta: string; motivo?: string }
+export interface RevisionSemanal { semana: string; texto: string; creadoEn: string } // semana = su lunes
 
 export const db = new Dexie('rumbo') as Dexie & {
   habitos: EntityTable<Habito, 'id'>
@@ -63,6 +108,18 @@ export const db = new Dexie('rumbo') as Dexie & {
   registrosAnimo: EntityTable<RegistroAnimo, 'id'>
   suplementos: EntityTable<Suplemento, 'id'>
   perfil: EntityTable<Perfil, 'id'>
+  registrosPeso: EntityTable<RegistroPeso, 'id'>
+  registrosMedidas: EntityTable<RegistroMedidas, 'id'>
+  alimentos: EntityTable<Alimento, 'id'>
+  comidasFrecuentes: EntityTable<ComidaFrecuente, 'id'>
+  registrosComida: EntityTable<RegistroComida, 'id'>
+  metasNutricion: EntityTable<MetasNutricion, 'id'>
+  recompensas: EntityTable<Recompensa, 'id'>
+  canjes: EntityTable<Canje, 'id'>
+  logros: EntityTable<Logro, 'clave'>
+  comodines: EntityTable<UsoComodin, 'id'>
+  pausas: EntityTable<Pausa, 'id'>
+  revisiones: EntityTable<RevisionSemanal, 'semana'>
 }
 
 db.version(1).stores({
@@ -74,8 +131,43 @@ db.version(1).stores({
   perfil: 'id',
 })
 
+db.version(2)
+  .stores({
+    registrosPeso: '++id, &fecha',
+    registrosMedidas: '++id, fecha',
+    alimentos: '++id, nombre',
+    comidasFrecuentes: '++id',
+    registrosComida: '++id, fecha, alimentoId',
+    metasNutricion: '++id, desde',
+    recompensas: '++id',
+    canjes: '++id',
+    logros: 'clave',
+    comodines: '++id, &[habitoId+fecha]',
+    pausas: '++id',
+    revisiones: 'semana',
+  })
+  .upgrade((tx) => asignarClaves(tx.table('habitos')))
+
+/** Marca Gimnasio y Proteína de la v1 por nombre, para que se conecten con logros y comidas. */
+async function asignarClaves(t: EntityTable<Habito, 'id'>) {
+  const hs = await t.toArray()
+  for (const clave of ['gimnasio', 'proteina'] as const) {
+    if (hs.some((h) => h.clave === clave)) continue
+    const h = hs.find((h) => !h.clave && normalizar(h.nombre) === clave)
+    if (h) await t.update(h.id, { clave })
+  }
+}
+
 export const COLORES = ['#2f7d6d', '#3a5ba9', '#b8862f', '#b5473f', '#7a5aa6', '#3e8da8']
-export const BLOQUES: Record<BloqueId, string> = { habitos: 'Hábitos', agua: 'Agua', sueno: 'Sueño', animo: 'Ánimo y energía' }
+export const BLOQUES: Record<BloqueId, string> = {
+  habitos: 'Hábitos', agua: 'Agua', sueno: 'Sueño', nutricion: 'Nutrición', animo: 'Ánimo y energía', peso: 'Peso',
+}
+
+/** Bloques de Hoy en el orden guardado, sumando al final los que agregó una versión nueva. */
+export const bloquesDe = (p: Perfil) => [
+  ...p.bloques.filter((b) => b.id in BLOQUES),
+  ...(Object.keys(BLOQUES) as BloqueId[]).filter((id) => !p.bloques.some((b) => b.id === id)).map((id) => ({ id, visible: true })),
+]
 
 const base = { diasFijos: [], vecesPorSemana: 0, archivado: false }
 
@@ -83,8 +175,8 @@ db.on('populate', async (tx) => {
   const [, creatinaId] = await tx.table('habitos').bulkAdd([
     { ...base, clave: 'agua', nombre: 'Agua', icono: '💧', color: COLORES[5], tipo: 'cantidad', meta: 8, unidad: 'vasos', incremento: 1, frecuencia: 'diaria', orden: 0 },
     { ...base, nombre: 'Creatina', icono: '🥄', color: COLORES[1], tipo: 'check', meta: 1, unidad: '', incremento: 1, frecuencia: 'diaria', orden: 1 },
-    { ...base, nombre: 'Gimnasio', icono: '🏋️', color: COLORES[3], tipo: 'check', meta: 1, unidad: '', incremento: 1, frecuencia: 'x_por_semana', vecesPorSemana: 4, orden: 2 },
-    { ...base, nombre: 'Proteína', icono: '🥩', color: COLORES[2], tipo: 'cantidad', meta: 150, unidad: 'g', incremento: 25, frecuencia: 'diaria', orden: 3 },
+    { ...base, clave: 'gimnasio', nombre: 'Gimnasio', icono: '🏋️', color: COLORES[3], tipo: 'check', meta: 1, unidad: '', incremento: 1, frecuencia: 'x_por_semana', vecesPorSemana: 4, orden: 2 },
+    { ...base, clave: 'proteina', nombre: 'Proteína', icono: '🥩', color: COLORES[2], tipo: 'cantidad', meta: 150, unidad: 'g', incremento: 25, frecuencia: 'diaria', orden: 3 },
   ], { allKeys: true })
   await tx.table('suplementos').add({ nombre: 'Creatina', presentacion: 'g', cantidadEnvase: 300, dosisDiaria: 5, stockActual: 0, avisarConDias: 5, habitoId: creatinaId })
   await tx.table('perfil').add({
@@ -92,6 +184,20 @@ db.on('populate', async (tx) => {
     bloques: (Object.keys(BLOQUES) as BloqueId[]).map((id) => ({ id, visible: true })),
   } satisfies Perfil)
 })
+
+/** Todo lo que necesitan XP, logros y la revisión semanal. */
+export async function cargarTodo() {
+  const [habitos, registrosHabito, registrosSueno, registrosAnimo, registrosPeso, registrosComida, metasNutricion, canjes, logros, comodines, pausas] =
+    await Promise.all([
+      db.habitos.toArray(), db.registrosHabito.toArray(), db.registrosSueno.toArray(), db.registrosAnimo.toArray(),
+      db.registrosPeso.toArray(), db.registrosComida.toArray(), db.metasNutricion.toArray(), db.canjes.toArray(),
+      db.logros.toArray(), db.comodines.toArray(), db.pausas.toArray(),
+    ])
+  return { habitos, registrosHabito, registrosSueno, registrosAnimo, registrosPeso, registrosComida, metasNutricion, canjes, logros, comodines, pausas }
+}
+export type Datos = Awaited<ReturnType<typeof cargarTodo>>
+
+// ---------- Hábitos ----------
 
 /**
  * Fija el valor de un hábito en un día (o lo calcula desde el actual, para toques rápidos seguidos).
@@ -128,6 +234,65 @@ export async function guardarSueno(r: Omit<RegistroSueno, 'id'>) {
   })
 }
 
+export async function guardarPeso(fecha: string, kg: number) {
+  await db.transaction('rw', db.registrosPeso, async () => {
+    const reg = await db.registrosPeso.where('fecha').equals(fecha).first()
+    if (reg) await db.registrosPeso.update(reg.id, { kg })
+    else await db.registrosPeso.add({ fecha, kg })
+  })
+}
+
+// ---------- Comidas ----------
+
+const tablasComida = [db.registrosComida, db.alimentos, db.habitos, db.registrosHabito, db.suplementos]
+
+/** El hábito de proteína toma el total de proteína de las comidas del día. */
+async function sincronizarProteina(fecha: string) {
+  const h = await db.habitos.filter((h) => h.clave === 'proteina' && !h.archivado).first()
+  if (!h) return
+  const comidas = await db.registrosComida.where('fecha').equals(fecha).toArray()
+  await fijarValor(h, fecha, Math.round(comidas.reduce((s, c) => s + c.p, 0)))
+}
+
+export async function agregarItems(fecha: string, momento: Momento, items: Item[]) {
+  await db.transaction('rw', tablasComida, async () => {
+    const alimentos = await db.alimentos.bulkGet(items.map((i) => i.alimentoId))
+    const filas = items.flatMap((it, k) => {
+      const a = alimentos[k]
+      return a ? [{ ...it, fecha, momento, nombre: a.nombre, ...macrosDe(a.por100, it.gramos) }] : []
+    })
+    await db.registrosComida.bulkAdd(filas)
+    await sincronizarProteina(fecha)
+  })
+}
+
+export async function borrarComida(r: RegistroComida) {
+  await db.transaction('rw', tablasComida, async () => {
+    await db.registrosComida.delete(r.id)
+    await sincronizarProteina(r.fecha)
+  })
+}
+
+/** Guarda metas nuevas desde `desde` y alinea la meta del hábito de proteína. */
+export async function guardarMetas(m: Omit<MetasNutricion, 'id'>) {
+  await db.transaction('rw', db.metasNutricion, db.habitos, async () => {
+    await db.metasNutricion.where('desde').equals(m.desde).delete()
+    await db.metasNutricion.add(m)
+    const h = await db.habitos.filter((h) => h.clave === 'proteina').first()
+    if (h) await db.habitos.update(h.id, { meta: m.proteinaG })
+  })
+}
+
+// ---------- Recompensas ----------
+
+export async function canjear(r: Recompensa, fecha: string) {
+  await db.canjes.add({ recompensaId: r.id, nombre: r.nombre, fecha, costo: r.costo })
+}
+
+export async function usarComodin(habitoId: number, fecha: string, hoy: string) {
+  await db.comodines.add({ habitoId, fecha, usadoEn: hoy })
+}
+
 // ---------- Backup ----------
 
 export async function exportarBackup() {
@@ -135,12 +300,11 @@ export async function exportarBackup() {
   return { app: 'rumbo', version: db.verno, exportadoEn: new Date().toISOString(), data }
 }
 
-/** Valida y restaura un backup. Devuelve cuántas filas no se pudieron fusionar. */
+/** Valida y restaura un backup (de esta versión o anteriores). Devuelve cuántas filas no se pudieron fusionar. */
 export async function importarBackup(json: unknown, modo: 'reemplazar' | 'fusionar'): Promise<number> {
   const b = json as { app?: unknown; version?: unknown; data?: Record<string, unknown> }
   if (!b || b.app !== 'rumbo' || typeof b.version !== 'number' || typeof b.data !== 'object' || !b.data)
     throw new Error('El archivo no es un backup de Rumbo.')
-  // ponytail: sin migraciones de backups viejos; hacen falta cuando exista db.version(2).
   if (b.version > db.verno) throw new Error('El backup es de una versión más nueva de la app. Actualizala y probá de nuevo.')
   for (const [nombre, filas] of Object.entries(b.data)) {
     if (!db.tables.some((t) => t.name === nombre)) throw new Error(`Tabla desconocida en el backup: ${nombre}.`)
@@ -160,6 +324,7 @@ export async function importarBackup(json: unknown, modo: 'reemplazar' | 'fusion
         fallidas += Object.keys(e.failuresByPos).length
       }
     }
+    await asignarClaves(db.habitos) // un backup de la v1 no trae las claves
   })
   return fallidas
 }

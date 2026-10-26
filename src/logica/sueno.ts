@@ -39,17 +39,20 @@ export function horarioHabitual(regs: RegistroSueno[]) {
   }
 }
 
+/** Desvío estándar de la hora de acostarse, en minutos (mínimo 3 noches). */
+export function desvioAcostarse(rs: RegistroSueno[]) {
+  if (rs.length < 3) return null
+  const xs = rs.map((r) => minNoche(r.acostado)), m = promedio(xs)!
+  return Math.sqrt(xs.reduce((s, x) => s + (x - m) ** 2, 0) / xs.length)
+}
+
 export function metricasSueno(regs: RegistroSueno[], hoy: string, metaMin: number) {
   const ns = noches(regs).filter((r) => r.fecha <= hoy)
   const ultimos = (n: number) => ns.filter((r) => diasEntre(r.fecha, hoy) < n)
   const calidad = (rs: RegistroSueno[]) => promedio(rs.flatMap((r) => (r.calidad ? [r.calidad] : [])))
   const u7 = ultimos(7), u30 = ultimos(30), u14 = ultimos(14)
 
-  let desvioMin: number | null = null
-  if (u14.length >= 3) {
-    const xs = u14.map((r) => minNoche(r.acostado)), m = promedio(xs)!
-    desvioMin = Math.sqrt(xs.reduce((s, x) => s + (x - m) ** 2, 0) / xs.length)
-  }
+  const desvioMin = desvioAcostarse(u14)
   const lunes = lunesDe(hoy)
   return {
     min7: promedio(u7.map((r) => r.duracionMin)),

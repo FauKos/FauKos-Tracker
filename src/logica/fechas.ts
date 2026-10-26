@@ -48,3 +48,7 @@ export function duracion(min: number): string {
   const m = Math.round(Math.abs(min))
   return `${min < 0 ? '−' : ''}${Math.floor(m / 60)} h ${String(m % 60).padStart(2, '0')}`
 }
+
+/** Número con formato argentino: 1.234,5 */
+export const num = (x: number, decimales = 0) => x.toLocaleString('es-AR', { minimumFractionDigits: decimales, maximumFractionDigits: decimales })
+export const signo = (x: number, decimales = 1) => `${x > 0 ? '+' : x < 0 ? '−' : ''}${num(Math.abs(x), decimales)}`

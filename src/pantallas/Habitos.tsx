@@ -17,7 +17,7 @@ function frecuenciaTexto(h: Habito) {
   return h.diasFijos.map((d) => DIAS_CORTOS[d]).join(', ')
 }
 
-function FormHabito({ inicial, onListo }: { inicial: Borrador; onListo: () => void }) {
+function FormHabito({ inicial, hoy, onListo }: { inicial: Borrador; hoy: string; onListo: () => void }) {
   const [b, setB] = useState(inicial)
   const [intento, setIntento] = useState(false)
   const set = (c: Partial<Borrador>) => setB({ ...b, ...c })
@@ -33,13 +33,13 @@ function FormHabito({ inicial, onListo }: { inicial: Borrador; onListo: () => vo
     if (error) return
     const h = { ...b, nombre: b.nombre.trim(), ...(b.tipo === 'check' && { meta: 1, incremento: 1, unidad: '' }) }
     if (h.id) await db.habitos.put(h as Habito)
-    else await db.habitos.add({ ...h, orden: (await db.habitos.count()) })
+    else await db.habitos.add({ ...h, desde: hoy, orden: await db.habitos.count() })
     onListo()
   }
 
   async function archivar() {
     if (!b.id || !confirm(`¿Archivar ${b.nombre}? El historial se guarda y lo podés restaurar.`)) return
-    await db.habitos.update(b.id, { archivado: true })
+    await db.habitos.update(b.id, { archivado: true, archivadoEn: hoy })
     onListo()
   }
 
@@ -110,7 +110,7 @@ export function Habitos({ hoy }: { hoy: string }) {
   const [editando, setEditando] = useState<Borrador | null>(null)
 
   if (!habitos) return null // cargando
-  if (editando) return <FormHabito inicial={editando} onListo={() => setEditando(null)} />
+  if (editando) return <FormHabito inicial={editando} hoy={hoy} onListo={() => setEditando(null)} />
 
   const activos = habitos.filter((h) => !h.archivado).sort((a, b) => a.orden - b.orden)
   const archivados = habitos.filter((h) => h.archivado)
@@ -162,7 +162,7 @@ export function Habitos({ hoy }: { hoy: string }) {
             {archivados.map((h) => (
               <li key={h.id} className="archivado">
                 <span className="texto"><strong>{h.icono} {h.nombre}</strong></span>
-                <button className="link" onClick={() => db.habitos.update(h.id, { archivado: false, orden: activos.length })}>Restaurar</button>
+                <button className="link" onClick={() => db.habitos.update(h.id, { archivado: false, archivadoEn: undefined, orden: activos.length })}>Restaurar</button>
               </li>
             ))}
           </ul>

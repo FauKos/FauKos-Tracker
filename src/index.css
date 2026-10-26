@@ -337,6 +337,68 @@ input.titulo-input { min-height: 36px; padding: 0; border: 0; background: none; 
 .acciones .secundario { width: auto; padding: 0 16px; }
 .confirmar { margin-top: 12px; padding: 14px; border: 1px solid var(--linea); border-radius: 14px; background: var(--superficie); }
 
+/* ---------- v2 ---------- */
+.cabecera .saludo { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.nivel-hoy { display: flex; align-items: center; gap: 8px; padding: 4px 0; border: 0; background: none; font-size: 13px; font-weight: 650; color: var(--tinta); }
+.nivel-hoy progress, .nivel progress, .barra-meta progress {
+  appearance: none; width: 64px; height: 6px; border: 0; border-radius: 3px; background: var(--linea); overflow: hidden;
+}
+.nivel progress, .barra-meta progress { width: 100%; }
+.nivel progress { height: 8px; border-radius: 4px; margin-top: 4px; }
+progress::-webkit-progress-bar { background: var(--linea); }
+progress::-webkit-progress-value { background: var(--tinta); transition: width 200ms; }
+progress::-moz-progress-bar { background: var(--tinta); }
+.habito progress::-webkit-progress-value { background: var(--c); }
+.habito progress::-moz-progress-bar { background: var(--c); }
+
+.barra-meta { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; margin: 10px 0; font-size: 15px; }
+.barra-meta .cifra { font-variant-numeric: tabular-nums; font-weight: 600; }
+.barra-meta progress { grid-column: 1 / -1; }
+.totales { border-top: 0; margin-top: 8px; padding-top: 0; }
+
+.dia-nav { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; margin-top: 8px; text-align: center; font-weight: 650; }
+.dia-nav button { height: 44px; border: 0; background: none; font-size: 26px; color: var(--tenue); }
+
+.link.volver { display: block; padding: 4px 0 8px; font-size: 15px; text-decoration: none; color: var(--tenue); }
+.barra .link.volver { padding: 0; }
+
+.lista .fila-simple {
+  flex: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+  min-height: 44px; padding: 0; border: 0; background: none; text-align: left;
+}
+.fila-simple strong { font-weight: 600; }
+.fila-simple small { font-size: 13px; color: var(--tenue); }
+.comidas b { margin-left: auto; font-variant-numeric: tabular-nums; }
+.comidas .texto { flex: 1; }
+.quitar { width: 36px; height: 36px; flex-shrink: 0; border: 1px solid var(--linea); border-radius: 50%; background: none; font-size: 18px; line-height: 1; color: var(--tenue); }
+.estrella { width: 40px; height: 40px; border: 0; background: none; font-size: 22px; color: var(--linea); }
+.estrella[aria-pressed='true'] { color: #c99a2e; }
+.fila-porcion { display: grid; grid-template-columns: 1fr 88px 36px; gap: 8px; align-items: center; margin-bottom: 8px; }
+.acciones { flex-wrap: wrap; }
+.acciones .secundario { margin-top: 8px; }
+input[type='search'] { -webkit-appearance: none; }
+textarea {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--linea); border-radius: 10px;
+  background: var(--superficie); color: var(--tinta); font: inherit; font-size: 17px; resize: vertical;
+}
+.aviso-suave { margin-top: 8px; padding: 10px 12px; border-radius: 10px; background: color-mix(in srgb, #c99a2e 16%, transparent); font-size: 15px; }
+.datos .par { display: contents; }
+h3 { margin: 20px 0 4px; font-size: 15px; font-weight: 650; color: var(--tenue); }
+.secundario.chico { width: auto; min-height: 36px; margin: 0; padding: 0 14px; font-size: 15px; }
+
+.linea { display: block; width: 100%; height: 72px; margin: 4px 0 12px; overflow: visible; }
+.linea polyline { fill: none; stroke: var(--tinta); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+
+.logros { list-style: none; margin: 0; padding: 0; }
+.logros li { display: grid; grid-template-columns: 32px 1fr auto; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--linea); }
+.logros .xp { font-size: 13px; color: var(--tenue); font-variant-numeric: tabular-nums; }
+.logros li.bloqueado .icono { filter: grayscale(1); opacity: 0.45; }
+.logros li.bloqueado strong { color: var(--tenue); }
+.avisos li.logro { border-color: var(--ok); }
+.link.comodin { align-self: flex-start; padding: 4px 0 0; font-size: 14px; }
+.peso-rapido { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
+.peso-rapido .primario { width: auto; margin: 0; padding: 0 16px; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
