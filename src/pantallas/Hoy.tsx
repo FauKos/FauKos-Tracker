@@ -210,7 +210,11 @@ export function Hoy({ hoy, perfil, datos, progreso, irA }: { hoy: string; perfil
           <div className="vasos">
             {Array.from({ length: Math.ceil(Math.max(agua.meta, v) / paso) }, (_, i) => {
               const lleno = (i + 1) * paso <= v
-              return <button key={i} className={lleno ? 'lleno' : ''} aria-label={`${(i + 1) * paso} ${agua.unidad}`} onClick={() => fijar(agua, (i + 1) * paso === v ? i * paso : (i + 1) * paso)} />
+              return (
+                <button key={i} className={lleno ? 'lleno' : ''} aria-label={`${(i + 1) * paso} ${agua.unidad}`} aria-pressed={lleno} onClick={() => fijar(agua, (i + 1) * paso === v ? i * paso : (i + 1) * paso)}>
+                  <svg viewBox="0 0 28 36" aria-hidden><path d="M3.5 3h21l-2.8 30H6.3z" /></svg>
+                </button>
+              )
             })}
             <button className="mas" aria-label={`Sumar ${paso} ${agua.unidad}`} onClick={() => fijar(agua, (x) => x + paso)}><Icono i="sumar" tam={18} /></button>
           </div>
