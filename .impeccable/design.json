@@ -1,0 +1,560 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-26T12:20:45.925Z",
+  "title": "Design System: Rumbo",
+  "extensions": {
+    "colorMeta": {
+      "anden": {
+        "role": "neutral",
+        "displayName": "Andén",
+        "canonical": "#f2f3f5",
+        "dark": "#0e1114",
+        "tonalRamp": [
+          "oklch(15% 0.005 250)",
+          "oklch(25% 0.006 250)",
+          "oklch(35% 0.007 250)",
+          "oklch(45% 0.009 250)",
+          "oklch(55% 0.010 250)",
+          "oklch(70% 0.008 250)",
+          "oklch(85% 0.006 250)",
+          "oklch(95% 0.005 250)"
+        ]
+      },
+      "cartel": {
+        "role": "neutral",
+        "displayName": "Cartel",
+        "canonical": "#ffffff",
+        "dark": "#1a1e23",
+        "tonalRamp": [
+          "oklch(15% 0.004 250)",
+          "oklch(25% 0.005 250)",
+          "oklch(35% 0.006 250)",
+          "oklch(45% 0.007 250)",
+          "oklch(55% 0.008 250)",
+          "oklch(70% 0.006 250)",
+          "oklch(85% 0.005 250)",
+          "oklch(95% 0.004 250)"
+        ]
+      },
+      "cartel-2": {
+        "role": "neutral",
+        "displayName": "Cartel 2",
+        "canonical": "#f6f7f9",
+        "dark": "#22272d",
+        "tonalRamp": [
+          "oklch(15% 0.005 250)",
+          "oklch(25% 0.006 250)",
+          "oklch(35% 0.007 250)",
+          "oklch(45% 0.009 250)",
+          "oklch(55% 0.010 250)",
+          "oklch(70% 0.008 250)",
+          "oklch(85% 0.006 250)",
+          "oklch(95% 0.005 250)"
+        ]
+      },
+      "tinta": {
+        "role": "neutral",
+        "displayName": "Tinta",
+        "canonical": "#1b1f24",
+        "dark": "#eef1f4",
+        "tonalRamp": [
+          "oklch(15% 0.007 250)",
+          "oklch(25% 0.009 250)",
+          "oklch(35% 0.011 250)",
+          "oklch(45% 0.013 250)",
+          "oklch(55% 0.015 250)",
+          "oklch(70% 0.012 250)",
+          "oklch(85% 0.009 250)",
+          "oklch(95% 0.007 250)"
+        ]
+      },
+      "tenue": {
+        "role": "neutral",
+        "displayName": "Tenue",
+        "canonical": "#4a515a",
+        "dark": "#a9b1ba",
+        "tonalRamp": [
+          "oklch(15% 0.010 250)",
+          "oklch(25% 0.012 250)",
+          "oklch(35% 0.015 250)",
+          "oklch(45% 0.017 250)",
+          "oklch(55% 0.020 250)",
+          "oklch(70% 0.016 250)",
+          "oklch(85% 0.012 250)",
+          "oklch(95% 0.010 250)"
+        ]
+      },
+      "via": {
+        "role": "neutral",
+        "displayName": "Vía",
+        "canonical": "#d5d9de",
+        "dark": "#3a424b",
+        "tonalRamp": [
+          "oklch(15% 0.006 250)",
+          "oklch(25% 0.007 250)",
+          "oklch(35% 0.009 250)",
+          "oklch(45% 0.010 250)",
+          "oklch(55% 0.012 250)",
+          "oklch(70% 0.010 250)",
+          "oklch(85% 0.007 250)",
+          "oklch(95% 0.006 250)"
+        ]
+      },
+      "borde": {
+        "role": "neutral",
+        "displayName": "Borde",
+        "canonical": "#e3e6ea",
+        "dark": "#2b3138",
+        "tonalRamp": [
+          "oklch(15% 0.005 250)",
+          "oklch(25% 0.006 250)",
+          "oklch(35% 0.007 250)",
+          "oklch(45% 0.009 250)",
+          "oklch(55% 0.010 250)",
+          "oklch(70% 0.008 250)",
+          "oklch(85% 0.006 250)",
+          "oklch(95% 0.005 250)"
+        ]
+      },
+      "comida": {
+        "role": "secondary",
+        "displayName": "Verde Línea C",
+        "canonical": "#00a651",
+        "tonalRamp": [
+          "oklch(15% 0.083 150)",
+          "oklch(25% 0.105 150)",
+          "oklch(35% 0.127 150)",
+          "oklch(45% 0.148 150)",
+          "oklch(55% 0.170 150)",
+          "oklch(70% 0.138 150)",
+          "oklch(85% 0.105 150)",
+          "oklch(95% 0.083 150)"
+        ]
+      },
+      "comida-t": {
+        "role": "secondary",
+        "displayName": "Verde Línea C, texto",
+        "canonical": "#007a3d",
+        "dark": "#3ccf85",
+        "tonalRamp": [
+          "oklch(15% 0.064 150)",
+          "oklch(25% 0.080 150)",
+          "oklch(35% 0.097 150)",
+          "oklch(45% 0.113 150)",
+          "oklch(55% 0.130 150)",
+          "oklch(70% 0.105 150)",
+          "oklch(85% 0.080 150)",
+          "oklch(95% 0.064 150)"
+        ]
+      },
+      "habitos": {
+        "role": "secondary",
+        "displayName": "Rojo Línea H",
+        "canonical": "#e2231a",
+        "tonalRamp": [
+          "oklch(15% 0.108 28)",
+          "oklch(25% 0.136 28)",
+          "oklch(35% 0.164 28)",
+          "oklch(45% 0.192 28)",
+          "oklch(55% 0.220 28)",
+          "oklch(70% 0.178 28)",
+          "oklch(85% 0.136 28)",
+          "oklch(95% 0.108 28)"
+        ]
+      },
+      "habitos-t": {
+        "role": "secondary",
+        "displayName": "Rojo Línea H, texto",
+        "canonical": "#c21b13",
+        "dark": "#ff6f66",
+        "tonalRamp": [
+          "oklch(15% 0.098 28)",
+          "oklch(25% 0.124 28)",
+          "oklch(35% 0.149 28)",
+          "oklch(45% 0.175 28)",
+          "oklch(55% 0.200 28)",
+          "oklch(70% 0.162 28)",
+          "oklch(85% 0.124 28)",
+          "oklch(95% 0.098 28)"
+        ]
+      },
+      "agua": {
+        "role": "secondary",
+        "displayName": "Celeste Línea A",
+        "canonical": "#00aeef",
+        "tonalRamp": [
+          "oklch(15% 0.074 235)",
+          "oklch(25% 0.093 235)",
+          "oklch(35% 0.112 235)",
+          "oklch(45% 0.131 235)",
+          "oklch(55% 0.150 235)",
+          "oklch(70% 0.121 235)",
+          "oklch(85% 0.093 235)",
+          "oklch(95% 0.074 235)"
+        ]
+      },
+      "agua-t": {
+        "role": "secondary",
+        "displayName": "Celeste Línea A, texto",
+        "canonical": "#00739e",
+        "dark": "#4fc6f2",
+        "tonalRamp": [
+          "oklch(15% 0.059 235)",
+          "oklch(25% 0.074 235)",
+          "oklch(35% 0.089 235)",
+          "oklch(45% 0.105 235)",
+          "oklch(55% 0.120 235)",
+          "oklch(70% 0.097 235)",
+          "oklch(85% 0.074 235)",
+          "oklch(95% 0.059 235)"
+        ]
+      },
+      "sueno": {
+        "role": "secondary",
+        "displayName": "Violeta Línea S",
+        "canonical": "#7b3fa0",
+        "tonalRamp": [
+          "oklch(15% 0.074 315)",
+          "oklch(25% 0.093 315)",
+          "oklch(35% 0.112 315)",
+          "oklch(45% 0.131 315)",
+          "oklch(55% 0.150 315)",
+          "oklch(70% 0.121 315)",
+          "oklch(85% 0.093 315)",
+          "oklch(95% 0.074 315)"
+        ]
+      },
+      "sueno-t": {
+        "role": "secondary",
+        "displayName": "Violeta Línea S, texto",
+        "canonical": "#6d2e8e",
+        "dark": "#c393e6",
+        "tonalRamp": [
+          "oklch(15% 0.074 315)",
+          "oklch(25% 0.093 315)",
+          "oklch(35% 0.112 315)",
+          "oklch(45% 0.131 315)",
+          "oklch(55% 0.150 315)",
+          "oklch(70% 0.121 315)",
+          "oklch(85% 0.093 315)",
+          "oklch(95% 0.074 315)"
+        ]
+      },
+      "peso": {
+        "role": "secondary",
+        "displayName": "Azul Línea P",
+        "canonical": "#0067b1",
+        "dark": "#2f86d6",
+        "tonalRamp": [
+          "oklch(15% 0.074 252)",
+          "oklch(25% 0.093 252)",
+          "oklch(35% 0.112 252)",
+          "oklch(45% 0.131 252)",
+          "oklch(55% 0.150 252)",
+          "oklch(70% 0.121 252)",
+          "oklch(85% 0.093 252)",
+          "oklch(95% 0.074 252)"
+        ]
+      },
+      "peso-t": {
+        "role": "secondary",
+        "displayName": "Azul Línea P, texto",
+        "canonical": "#0067b1",
+        "dark": "#6fb0ec",
+        "tonalRamp": [
+          "oklch(15% 0.074 252)",
+          "oklch(25% 0.093 252)",
+          "oklch(35% 0.112 252)",
+          "oklch(45% 0.131 252)",
+          "oklch(55% 0.150 252)",
+          "oklch(70% 0.121 252)",
+          "oklch(85% 0.093 252)",
+          "oklch(95% 0.074 252)"
+        ]
+      },
+      "premios": {
+        "role": "secondary",
+        "displayName": "Amarillo Línea N",
+        "canonical": "#ffd600",
+        "tonalRamp": [
+          "oklch(15% 0.088 95)",
+          "oklch(25% 0.111 95)",
+          "oklch(35% 0.134 95)",
+          "oklch(45% 0.157 95)",
+          "oklch(55% 0.180 95)",
+          "oklch(70% 0.146 95)",
+          "oklch(85% 0.111 95)",
+          "oklch(95% 0.088 95)"
+        ]
+      },
+      "premios-t": {
+        "role": "secondary",
+        "displayName": "Amarillo Línea N, texto",
+        "canonical": "#6b5200",
+        "dark": "#ffd600",
+        "tonalRamp": [
+          "oklch(15% 0.059 85)",
+          "oklch(25% 0.074 85)",
+          "oklch(35% 0.089 85)",
+          "oklch(45% 0.105 85)",
+          "oklch(55% 0.120 85)",
+          "oklch(70% 0.097 85)",
+          "oklch(85% 0.074 85)",
+          "oklch(95% 0.059 85)"
+        ]
+      },
+      "animo": {
+        "role": "secondary",
+        "displayName": "Naranja Línea Á",
+        "canonical": "#f28c00",
+        "tonalRamp": [
+          "oklch(15% 0.088 65)",
+          "oklch(25% 0.111 65)",
+          "oklch(35% 0.134 65)",
+          "oklch(45% 0.157 65)",
+          "oklch(55% 0.180 65)",
+          "oklch(70% 0.146 65)",
+          "oklch(85% 0.111 65)",
+          "oklch(95% 0.088 65)"
+        ]
+      },
+      "animo-t": {
+        "role": "secondary",
+        "displayName": "Naranja Línea Á, texto",
+        "canonical": "#9c5300",
+        "dark": "#ffb04d",
+        "tonalRamp": [
+          "oklch(15% 0.064 60)",
+          "oklch(25% 0.080 60)",
+          "oklch(35% 0.097 60)",
+          "oklch(45% 0.113 60)",
+          "oklch(55% 0.130 60)",
+          "oklch(70% 0.105 60)",
+          "oklch(85% 0.080 60)",
+          "oklch(95% 0.064 60)"
+        ]
+      },
+      "activo": {
+        "role": "primary",
+        "displayName": "Azul Línea P (interacción)",
+        "canonical": "#0067b1",
+        "dark": "#4c9be8",
+        "tonalRamp": [
+          "oklch(15% 0.074 252)",
+          "oklch(25% 0.093 252)",
+          "oklch(35% 0.112 252)",
+          "oklch(45% 0.131 252)",
+          "oklch(55% 0.150 252)",
+          "oklch(70% 0.121 252)",
+          "oklch(85% 0.093 252)",
+          "oklch(95% 0.074 252)"
+        ]
+      },
+      "alerta": {
+        "role": "neutral",
+        "displayName": "Alerta",
+        "canonical": "#c21b13",
+        "dark": "#ff6f66",
+        "tonalRamp": [
+          "oklch(15% 0.098 28)",
+          "oklch(25% 0.124 28)",
+          "oklch(35% 0.149 28)",
+          "oklch(45% 0.175 28)",
+          "oklch(55% 0.200 28)",
+          "oklch(70% 0.162 28)",
+          "oklch(85% 0.124 28)",
+          "oklch(95% 0.098 28)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Cifra",
+        "purpose": "La cifra protagonista de un cartel (kcal que quedan). Siempre tabular."
+      },
+      "headline": {
+        "displayName": "Título de pantalla",
+        "purpose": "\"Hoy\" a 34px; subpantallas a 30px, bienvenida a 32px."
+      },
+      "title": {
+        "displayName": "Título de cartel",
+        "purpose": "Junto a la letra de línea, 17px / 800."
+      },
+      "body": {
+        "displayName": "Texto",
+        "purpose": "Texto y campos a 17px; ayuda a 15px / 1.45 en tenue."
+      },
+      "label": {
+        "displayName": "Etiqueta",
+        "purpose": "Etiquetas de campo y leyendas; 12px / 700 en estaciones, 11px / 600 en pestañas."
+      }
+    },
+    "shadows": [
+      {
+        "name": "sombra",
+        "value": "0 1px 2px rgb(27 31 36 / 6%), 0 6px 16px -6px rgb(27 31 36 / 10%)",
+        "dark": "0 1px 2px rgb(0 0 0 / 30%)",
+        "purpose": "Carteles, lista de avisos y chip de nivel."
+      },
+      {
+        "name": "segmento-elegido",
+        "value": "0 1px 3px rgb(27 31 36 / 15%)",
+        "purpose": "Solo el segmento activo del control segmentado."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-encendido",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Estación que crece (500ms), vía y barras que se llenan (300ms), aviso de día perfecto (500ms)."
+      },
+      {
+        "name": "ease-out-corto",
+        "value": "ease-out, 200ms a 250ms",
+        "purpose": "Color del anillo de estación y giro del chevron de avisos."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation: none; transition: none",
+        "purpose": "Con prefers-reduced-motion se apaga todo el movimiento."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "columna",
+        "value": "520px",
+        "purpose": "Ancho máximo de la columna; diseño único para iPhone (402pt)."
+      },
+      {
+        "name": "oscuro",
+        "value": "(prefers-color-scheme: dark)",
+        "purpose": "Mismo andén de noche; ver colorMeta.*.dark."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Cartel",
+      "kind": "card",
+      "refersTo": "cartel",
+      "description": "Cada sección es un cartel blanco sobre el andén, con letra de línea y título.",
+      "html": "<section class=\"ds-cartel\"><h2 class=\"ds-titulo\"><span class=\"ds-letra\" style=\"--l: var(--comida, #00a651)\">C</span><span>Comida</span><small>Meta 2.394 kcal</small></h2><p class=\"ds-kcal\"><strong>2.097</strong> <span>kcal te quedan</span></p></section>",
+      "css": ".ds-cartel { padding: 16px; background: var(--cartel, #fff); border-radius: var(--radio, 16px); box-shadow: var(--sombra, 0 1px 2px rgb(27 31 36 / 6%), 0 6px 16px -6px rgb(27 31 36 / 10%)); color: var(--tinta, #1b1f24); font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; } .ds-titulo { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; font-size: 17px; font-weight: 800; } .ds-titulo small { margin-left: auto; font-size: 13px; font-weight: 600; color: var(--tenue, #4a515a); } .ds-letra { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--l); color: #fff; font-size: 14px; font-weight: 800; line-height: 1; } .ds-kcal { margin: 0; } .ds-kcal strong { font-size: 56px; font-weight: 800; letter-spacing: -0.035em; line-height: 1; font-variant-numeric: tabular-nums; } .ds-kcal span { font-size: 15px; font-weight: 600; color: var(--tenue, #4a515a); }"
+    },
+    {
+      "name": "Botón primario",
+      "kind": "button",
+      "refersTo": "button-primario",
+      "description": "Acción principal del cartel, en el color -t de su línea.",
+      "html": "<button class=\"ds-primario\" style=\"--lt: var(--comida-t, #007a3d)\"><svg class=\"ds-ico\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 5v14M5 12h14\"/></svg>Agregar merienda</button>",
+      "css": ".ds-ico { flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; } .ds-primario { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 50px; padding: 0 18px; border: 0; border-radius: var(--radio-ch, 12px); background: var(--lt, var(--activo, #0067b1)); color: #fff; font: 700 17px -apple-system, BlinkMacSystemFont, system-ui, sans-serif; cursor: pointer; } .ds-primario .ds-ico { stroke-width: 3.2; } .ds-primario:focus-visible { outline: 2px solid var(--activo, #0067b1); outline-offset: 2px; } .ds-primario:disabled { opacity: 0.4; cursor: default; }"
+    },
+    {
+      "name": "Botón secundario",
+      "kind": "button",
+      "refersTo": "button-secundario",
+      "description": "Acción alternativa: cartel con borde de 1.5px.",
+      "html": "<button class=\"ds-secundario\">Ver todo</button>",
+      "css": ".ds-secundario { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 50px; padding: 0 18px; border: 1.5px solid var(--borde, #e3e6ea); border-radius: var(--radio-ch, 12px); background: var(--cartel, #fff); color: var(--tinta, #1b1f24); font: 700 17px -apple-system, BlinkMacSystemFont, system-ui, sans-serif; cursor: pointer; } .ds-secundario:focus-visible { outline: 2px solid var(--activo, #0067b1); outline-offset: 2px; } .ds-secundario:disabled { opacity: 0.4; cursor: default; }"
+    },
+    {
+      "name": "Campo",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Etiqueta arriba, campo cartel-2 con borde de 1.5px; con foco el borde pasa a azul.",
+      "html": "<label class=\"ds-label\">Peso<input class=\"ds-input\" inputmode=\"decimal\" placeholder=\"72,4\"></label>",
+      "css": ".ds-label { display: flex; flex-direction: column; gap: 6px; font: 600 13px -apple-system, BlinkMacSystemFont, system-ui, sans-serif; color: var(--tenue, #4a515a); } .ds-input { appearance: none; width: 100%; min-height: 48px; padding: 10px 12px; border: 1.5px solid var(--borde, #e3e6ea); border-radius: var(--radio-ch, 12px); background: var(--cartel-2, #f6f7f9); color: var(--tinta, #1b1f24); font: 500 17px -apple-system, BlinkMacSystemFont, system-ui, sans-serif; } .ds-input:focus { border-color: var(--activo, #0067b1); outline: none; } .ds-input::placeholder { color: var(--tenue, #4a515a); opacity: 0.8; }"
+    },
+    {
+      "name": "Pestañas",
+      "kind": "nav",
+      "refersTo": "tab",
+      "description": "Barra fija abajo con ícono sobre texto; la activa en azul.",
+      "html": "<nav class=\"ds-tabs\"><button aria-current=\"page\"><svg class=\"ds-ico\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 11.5 12 5l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5h-5v5H5a1 1 0 0 1-1-1z\"/></svg>Hoy</button><button><svg class=\"ds-ico\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M7 3v18M4.5 3v5.5a2.5 2.5 0 0 0 5 0V3M17 21V3c-2.5 1.5-3.5 4.5-3.5 7.5 0 1.5 1 2.5 3.5 2.5\"/></svg>Comida</button><button><svg class=\"ds-ico\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5 12h.01M12 12h.01M19 12h.01\"/></svg>Más</button></nav>",
+      "css": ".ds-ico { flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; } .ds-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 6px 4px 8px; background: color-mix(in srgb, var(--cartel, #fff) 94%, transparent); backdrop-filter: saturate(1.6) blur(16px); border-top: 1px solid var(--borde, #e3e6ea); } .ds-tabs button { display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 50px; padding: 4px 0 0; border: 0; background: none; font: 600 11px -apple-system, BlinkMacSystemFont, system-ui, sans-serif; color: var(--tenue, #4a515a); cursor: pointer; } .ds-tabs button[aria-current=\"page\"] { color: var(--activo, #0067b1); } .ds-tabs button:focus-visible { outline: 2px solid var(--activo, #0067b1); outline-offset: 2px; }"
+    },
+    {
+      "name": "Chip de nivel",
+      "kind": "chip",
+      "refersTo": "nivel-chip",
+      "description": "Píldora blanca con el nivel en el círculo amarillo de la línea N.",
+      "html": "<button class=\"ds-nivel\"><span>4</span>Nivel 4</button>",
+      "css": ".ds-nivel { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; border: 0; border-radius: 99px; background: var(--cartel, #fff); box-shadow: var(--sombra, 0 1px 2px rgb(27 31 36 / 6%), 0 6px 16px -6px rgb(27 31 36 / 10%)); font: 700 13px -apple-system, BlinkMacSystemFont, system-ui, sans-serif; color: var(--tinta, #1b1f24); cursor: pointer; } .ds-nivel span { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--premios, #ffd600); color: #1b1f24; font-size: 15px; font-weight: 800; } .ds-nivel:focus-visible { outline: 2px solid var(--activo, #0067b1); outline-offset: 2px; }"
+    },
+    {
+      "name": "El recorrido",
+      "kind": "custom",
+      "refersTo": "recorrido",
+      "description": "La firma: estaciones que se encienden en el color de la línea; la vía solo entre dos hechas.",
+      "html": "<ol class=\"ds-recorrido\" style=\"--l: var(--comida, #00a651); --n: 4\"><li class=\"hecho\"><i></i><span>Desayuno</span></li><li class=\"hecho\"><i></i><span>Almuerzo</span></li><li class=\"proxima\"><i></i><span>Merienda</span></li><li><i></i><span>Cena</span></li></ol>",
+      "css": ".ds-recorrido { list-style: none; display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; } .ds-recorrido li { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; } .ds-recorrido li + li::before { content: \"\"; position: absolute; top: 11px; right: 50%; width: 100%; height: 6px; background: var(--via, #d5d9de); transition: background-color 300ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-recorrido li.hecho + li.hecho::before { background: var(--l); } .ds-recorrido i { position: relative; z-index: 1; width: 28px; height: 28px; border-radius: 50%; border: 6px solid var(--via, #d5d9de); background: var(--cartel, #fff); transform: scale(0.82); transition: border-color 250ms ease-out, transform 500ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-recorrido li.hecho i { border-color: var(--l); transform: scale(1); } .ds-recorrido li.proxima i { border-color: var(--l); border-style: dashed; transform: scale(1); } .ds-recorrido span { font-size: 12px; font-weight: 700; color: var(--tenue, #4a515a); white-space: nowrap; } .ds-recorrido li.hecho span { color: var(--tinta, #1b1f24); }"
+    },
+    {
+      "name": "Check de hábito",
+      "kind": "custom",
+      "refersTo": "check",
+      "description": "Círculo de 44px en rojo H; marcado se llena con tilde blanca.",
+      "html": "<button class=\"ds-check\" aria-pressed=\"true\" aria-label=\"Creatina\"><svg class=\"ds-ico\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5 12.5l4.5 4.5L19 7.5\"/></svg></button> <button class=\"ds-check\" aria-pressed=\"false\" aria-label=\"Gimnasio\"><svg class=\"ds-ico\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5 12.5l4.5 4.5L19 7.5\"/></svg></button>",
+      "css": ".ds-ico { flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; } .ds-check { display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 3px solid var(--habitos, #e2231a); border-radius: 50%; background: none; color: transparent; transition: background-color 150ms; cursor: pointer; } .ds-check[aria-pressed=\"true\"] { background: var(--habitos, #e2231a); color: #fff; } .ds-check:focus-visible { outline: 2px solid var(--activo, #0067b1); outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "El recorrido del Subte",
+    "overview": "Rumbo es señalética de Subte porteño puesta en un teléfono. El fondo es el andén, gris claro y quieto; encima cuelgan carteles blancos con esquina generosa y una sombra corta, como chapas atornilladas a la pared. Cada parte de la app es una línea: tiene un color y una letra en círculo, y ese par es lo único que identifica al módulo. No hay ilustraciones, no hay degradés, no hay tarjetas decorativas: el color aparece donde hay información de esa línea y en ningún otro lado.\n\nLa densidad es de uso diario con una mano. Los números importantes son grandes, negros y tabulares; todo lo demás es texto de sistema en negrita moderada. Lo que registrás se ve como estaciones que se encienden sobre una vía: es la firma de la app y se repite igual en comidas del día y en la semana de cada hábito.\n\nEl modo oscuro no es otro mundo, es el mismo andén de noche: fondo casi negro, carteles grafito, y las versiones de texto de cada línea se aclaran para mantener contraste.",
+    "keyCharacteristics": [
+      "Andén gris, carteles blancos de 16 px con sombra corta.",
+      "Una línea por módulo: color + letra en círculo de 26 px.",
+      "El recorrido (estaciones sobre una vía) como única firma gráfica.",
+      "Grotesca del sistema, pesos 600 a 800, números tabulares.",
+      "Íconos dibujados a un solo trazo de 2 px, sin relleno."
+    ],
+    "rules": [
+      {
+        "name": "The Una Línea Un Color Rule",
+        "body": "Un color de línea solo aparece dentro de su módulo. Un hábito no tiene color propio: usa el rojo de H, salvo Agua, que usa A.",
+        "section": "colors"
+      },
+      {
+        "name": "The Texto Con -t Rule",
+        "body": "Para texto o fondo con texto blanco se usa la variante `-t` (`var(--lt)`); el color de línea pleno queda para vías, letras, rellenos y bordes gruesos. En oscuro, el botón primario invierte: fondo de línea pleno con texto `#0e1114`.",
+        "section": "colors"
+      },
+      {
+        "name": "The Solo Suma Rule",
+        "body": "No hay rojo de castigo. `alerta` marca errores de carga y acciones destructivas, nunca un día malo.",
+        "section": "colors"
+      },
+      {
+        "name": "The Cifra Tabular Rule",
+        "body": "Todo número que se compara o cambia (kcal, macros, rachas, peso, XP, horas) lleva `font-variant-numeric: tabular-nums`.",
+        "section": "typography"
+      },
+      {
+        "name": "The Sin Mayúsculas Rule",
+        "body": "No hay texto en versalitas ni con tracking abierto. La jerarquía sale de tamaño y peso.",
+        "section": "typography"
+      },
+      {
+        "name": "The Una Sombra Rule",
+        "body": "Solo cuelgan con sombra los carteles, la lista de avisos, el chip de nivel y el segmento elegido. Botones, campos y opciones se distinguen con borde de 1.5px, no con sombra.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do poner cada sección en un cartel blanco de 16px con la sombra de cartel sobre el andén.",
+      "Do abrir cada cartel de módulo con su letra en círculo de 26px y el título a 17px / 800.",
+      "Do usar el recorrido para cualquier secuencia de registros del día o de la semana, con la vía encendida solo entre estaciones hechas.",
+      "Do usar la variante `-t` de la línea para texto y botones primarios; el color pleno para vías, letras y rellenos.",
+      "Do dibujar íconos nuevos a un trazo de 2px en caja de 24px.",
+      "Do mantener 44px mínimos de área táctil y números tabulares."
+    ],
+    "donts": [
+      "Don't darle a un hábito un color propio fuera de la línea H (salvo Agua, línea A).",
+      "Don't usar emojis ni glifos tipográficos como íconos.",
+      "Don't usar un color de línea fuera de su módulo ni como decoración.",
+      "Don't usar rojo para marcar un día incumplido; los huecos no se castigan.",
+      "Don't elevar botones, campos u opciones con sombra; se distinguen con borde de 1.5px.",
+      "Don't usar texto en versalitas con tracking abierto como rótulo sobre los títulos."
+    ]
+  }
+}

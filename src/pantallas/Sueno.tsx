@@ -4,7 +4,7 @@ import { db, type Perfil } from '../db'
 import { ddmmaaaa, duracion } from '../logica/fechas'
 import { rachaDiaria } from '../logica/habitos'
 import { horarioHabitual, metricasSueno } from '../logica/sueno'
-import { FormSueno } from '../ui'
+import { FormSueno, Titulo } from '../ui'
 
 const horas = (min: number | null) => (min == null ? 'Sin datos' : duracion(min))
 const nota = (n: number | null) => (n == null ? 'Sin datos' : n.toFixed(1).replace('.', ','))
@@ -21,13 +21,13 @@ export function Sueno({ hoy, perfil }: { hoy: string; perfil: Perfil }) {
       <header className="barra"><h1>Sueño</h1></header>
 
       <section aria-labelledby="t-cargar">
-        <h2 id="t-cargar">Cargar</h2>
+        <Titulo l="sueno" id="t-cargar">Cargar</Titulo>
         <label className="fecha-campo">Día en que te levantaste<input type="date" value={fecha} max={hoy} onChange={(e) => e.target.value && setFecha(e.target.value)} /></label>
         <FormSueno key={fecha + regs.length} fecha={fecha} inicial={horarioHabitual(regs)} conSiesta />
       </section>
 
       <section aria-labelledby="t-numeros">
-        <h2 id="t-numeros">Cómo venís</h2>
+        <Titulo l="sueno" id="t-numeros">Cómo venís</Titulo>
         <dl className="datos">
           <dt>Promedio 7 días</dt><dd>{horas(m.min7)}</dd>
           <dt>Promedio 30 días</dt><dd>{horas(m.min30)}</dd>

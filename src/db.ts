@@ -72,6 +72,7 @@ export interface Perfil {
   pesoObjetivo?: number
   ritmoSemanal?: number // kg por semana, negativo para bajar
   comodinAuto?: boolean
+  perfilListo?: boolean // ya pasó por la bienvenida
   ultimoComodinAuto?: string
 }
 
@@ -158,9 +159,8 @@ async function asignarClaves(t: EntityTable<Habito, 'id'>) {
   }
 }
 
-export const COLORES = ['#2f7d6d', '#3a5ba9', '#b8862f', '#b5473f', '#7a5aa6', '#3e8da8']
 export const BLOQUES: Record<BloqueId, string> = {
-  habitos: 'Hábitos', agua: 'Agua', sueno: 'Sueño', nutricion: 'Nutrición', animo: 'Ánimo y energía', peso: 'Peso',
+  nutricion: 'Comida', habitos: 'Hábitos', agua: 'Agua', sueno: 'Sueño', animo: 'Ánimo y energía', peso: 'Peso',
 }
 
 /** Bloques de Hoy en el orden guardado, sumando al final los que agregó una versión nueva. */
@@ -173,10 +173,10 @@ const base = { diasFijos: [], vecesPorSemana: 0, archivado: false }
 
 db.on('populate', async (tx) => {
   const [, creatinaId] = await tx.table('habitos').bulkAdd([
-    { ...base, clave: 'agua', nombre: 'Agua', icono: '💧', color: COLORES[5], tipo: 'cantidad', meta: 8, unidad: 'vasos', incremento: 1, frecuencia: 'diaria', orden: 0 },
-    { ...base, nombre: 'Creatina', icono: '🥄', color: COLORES[1], tipo: 'check', meta: 1, unidad: '', incremento: 1, frecuencia: 'diaria', orden: 1 },
-    { ...base, clave: 'gimnasio', nombre: 'Gimnasio', icono: '🏋️', color: COLORES[3], tipo: 'check', meta: 1, unidad: '', incremento: 1, frecuencia: 'x_por_semana', vecesPorSemana: 4, orden: 2 },
-    { ...base, clave: 'proteina', nombre: 'Proteína', icono: '🥩', color: COLORES[2], tipo: 'cantidad', meta: 150, unidad: 'g', incremento: 25, frecuencia: 'diaria', orden: 3 },
+    { ...base, clave: 'agua', nombre: 'Agua', icono: 'gota', color: '', tipo: 'cantidad', meta: 8, unidad: 'vasos', incremento: 1, frecuencia: 'diaria', orden: 0 },
+    { ...base, nombre: 'Creatina', icono: 'capsula', color: '', tipo: 'check', meta: 1, unidad: '', incremento: 1, frecuencia: 'diaria', orden: 1 },
+    { ...base, clave: 'gimnasio', nombre: 'Gimnasio', icono: 'pesa', color: '', tipo: 'check', meta: 1, unidad: '', incremento: 1, frecuencia: 'x_por_semana', vecesPorSemana: 4, orden: 2 },
+    { ...base, clave: 'proteina', nombre: 'Proteína', icono: 'proteina', color: '', tipo: 'cantidad', meta: 150, unidad: 'g', incremento: 25, frecuencia: 'diaria', orden: 3 },
   ], { allKeys: true })
   await tx.table('suplementos').add({ nombre: 'Creatina', presentacion: 'g', cantidadEnvase: 300, dosisDiaria: 5, stockActual: 0, avisarConDias: 5, habitoId: creatinaId })
   await tx.table('perfil').add({

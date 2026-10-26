@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/canon.html"
+        ],
+        "createdAt": "2026-10-26T11:51:08.093Z",
+        "reason": "Claude: boceto de decisión descartable, no es UI que se publique"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/assigned.html"
+        ],
+        "createdAt": "2026-10-26T12:21:35.667Z",
+        "reason": "Claude: boceto descartado de la ronda de estilos (Paquete de yerba), no es UI que se publique"
+      }
+    ]
+  }
+}

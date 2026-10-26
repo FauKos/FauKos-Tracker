@@ -10,9 +10,12 @@ import { Comida } from './pantallas/Comida'
 import { Cuerpo } from './pantallas/Cuerpo'
 import { Habitos } from './pantallas/Habitos'
 import { Hoy } from './pantallas/Hoy'
+import { Bienvenida, PerfilPantalla } from './pantallas/Perfil'
 import { Premios } from './pantallas/Premios'
 import { Revision } from './pantallas/Revision'
 import { Sueno } from './pantallas/Sueno'
+import type { Momento } from './logica/nutricion'
+import { Icono } from './ui'
 
 const TABS = [
   ['hoy', 'Hoy'],
@@ -24,17 +27,18 @@ const TABS = [
 export type Tab = (typeof TABS)[number][0]
 
 const SUBS = [
+  ['perfil', 'Mi perfil', 'Edad, altura, peso y tu plan diario'],
   ['habitos', 'Hábitos', 'Crear, ordenar y archivar'],
   ['sueno', 'Sueño', 'Cargar noches y siestas, promedios'],
   ['animo', 'Ánimo y energía', 'Las últimas 8 semanas'],
   ['revision', 'Revisión semanal', 'Tu semana en números'],
-  ['ajustes', 'Ajustes', 'Perfil, pausa, suplementos y backup'],
+  ['ajustes', 'Ajustes', 'Pausa, suplementos, pantalla Hoy y backup'],
 ] as const
 export type Sub = (typeof SUBS)[number][0]
-export type Irse = (t: Tab, sub?: Sub) => void
+export type Irse = (t: Tab, sub?: Sub, momento?: Momento) => void
 
 export default function App() {
-  const [vista, setVista] = useState<{ tab: Tab; sub?: Sub }>({ tab: 'hoy' })
+  const [vista, setVista] = useState<{ tab: Tab; sub?: Sub; momento?: Momento }>({ tab: 'hoy' })
   const perfil = useLiveQuery(() => db.perfil.get('yo'))
   const datos = useLiveQuery(cargarTodo)
   const [, refrescar] = useState(0)
@@ -79,26 +83,33 @@ export default function App() {
   }, [perfil, datos, progreso, hoy])
 
   if (!perfil || !datos || !progreso) return null
-  const irA: Irse = (tab, sub) => {
-    setVista({ tab, sub })
+  if (!perfil.perfilListo) {
+    const ultimo = [...datos.registrosPeso].sort((a, b) => b.fecha.localeCompare(a.fecha))[0]
+    return <main><Bienvenida hoy={hoy} perfil={perfil} kgActual={ultimo?.kg} /></main>
+  }
+  const irA: Irse = (tab, sub, momento) => {
+    setVista({ tab, sub, momento })
     window.scrollTo(0, 0)
   }
-  const { tab, sub } = vista
+  const { tab, sub, momento } = vista
 
   return (
     <>
       <main>
         {tab === 'hoy' && <Hoy key={hoy} hoy={hoy} perfil={perfil} datos={datos} progreso={progreso} irA={irA} />}
-        {tab === 'comida' && <Comida key={hoy} hoy={hoy} perfil={perfil} />}
+        {tab === 'comida' && <Comida key={hoy + (momento ?? '')} hoy={hoy} perfil={perfil} momentoInicial={momento} onPerfil={() => irA('mas', 'perfil')} />}
         {tab === 'cuerpo' && <Cuerpo hoy={hoy} perfil={perfil} />}
         {tab === 'premios' && <Premios hoy={hoy} datos={datos} progreso={progreso} />}
         {tab === 'mas' && !sub && (
           <div className="pantalla">
             <header className="barra"><h1>Más</h1></header>
-            <ul className="lista">
+            <ul className="lista cartel">
               {SUBS.map(([id, nombre, detalle]) => (
                 <li key={id}>
-                  <button className="fila-simple" onClick={() => irA('mas', id)}><strong>{nombre}</strong><small>{detalle}</small></button>
+                  <button className="fila" onClick={() => irA('mas', id)}>
+                    <span className="texto"><strong>{nombre}</strong><small>{detalle}</small></span>
+                    <Icono i="siguiente" tam={20} />
+                  </button>
                 </li>
               ))}
             </ul>
@@ -106,7 +117,8 @@ export default function App() {
         )}
         {tab === 'mas' && sub && (
           <>
-            <button className="link volver" onClick={() => irA('mas')}>‹ Más</button>
+            <button className="volver" onClick={() => irA('mas')}><Icono i="atras" tam={20} />Más</button>
+            {sub === 'perfil' && <PerfilPantalla hoy={hoy} perfil={perfil} />}
             {sub === 'habitos' && <Habitos hoy={hoy} />}
             {sub === 'sueno' && <Sueno hoy={hoy} perfil={perfil} />}
             {sub === 'animo' && <Animo hoy={hoy} />}
@@ -117,7 +129,7 @@ export default function App() {
       </main>
       <nav className="tabs">
         {TABS.map(([id, nombre]) => (
-          <button key={id} aria-current={tab === id ? 'page' : undefined} onClick={() => irA(id)}>{nombre}</button>
+          <button key={id} aria-current={tab === id ? 'page' : undefined} onClick={() => irA(id)}><Icono i={id} />{nombre}</button>
         ))}
       </nav>
     </>

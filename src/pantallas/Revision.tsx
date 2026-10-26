@@ -54,7 +54,7 @@ export function Revision({ hoy, datos, perfil }: { hoy: string; datos: Datos; pe
           <dl className="datos">
             {rachas.map(({ h, r }) => (
               <div key={h.id} className="par">
-                <dt>{h.icono} {h.nombre}</dt>
+                <dt>{h.nombre}</dt>
                 <dd>{num(r.actual)} {h.frecuencia === 'x_por_semana' ? (r.actual === 1 ? 'semana' : 'semanas') : r.actual === 1 ? 'día' : 'días'}</dd>
               </div>
             ))}
@@ -68,7 +68,7 @@ export function Revision({ hoy, datos, perfil }: { hoy: string; datos: Datos; pe
           <ul className="lista">
             {r.logros.map((l) => {
               const def = LOGROS.find((x) => x.clave === l.clave)
-              return def && <li key={l.clave}><span className="texto"><strong>{def.icono} {def.nombre}</strong><small>{def.descripcion}</small></span></li>
+              return def && <li key={l.clave}><span className="texto"><strong>{def.nombre}</strong><small>{def.descripcion}</small></span></li>
             })}
           </ul>
         )}

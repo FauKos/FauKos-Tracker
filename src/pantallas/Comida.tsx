@@ -1,10 +1,11 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useState } from 'react'
-import { agregarItems, borrarComida, db, guardarMetas, type Actividad, type Alimento, type Item, type Objetivo, type Perfil, type RegistroComida, type Sexo } from '../db'
-import { calcularMetas, edad, RANGO_AJUSTE, tendencia } from '../logica/cuerpo'
+import { agregarItems, borrarComida, db, guardarMetas, type Alimento, type Item, type Perfil, type RegistroComida } from '../db'
+import { tendencia } from '../logica/cuerpo'
+import { calculo, faltantes, Plan } from './Perfil'
 import { ddmmaaaa, fechaLarga, num, sumarDias } from '../logica/fechas'
 import { buscar, macrosDe, metasEn, MOMENTOS, NOMBRE_MOMENTO, normalizar, receta, recientes, sumar, type Macros, type Momento } from '../logica/nutricion'
-import { Barra, Volver } from '../ui'
+import { Barra, Icono, linea, Recorrido, Titulo, Volver } from '../ui'
 
 type Vista =
   | { tipo: 'dia' }
@@ -17,9 +18,9 @@ const decimal = (s: string) => Number(s.replace(',', '.'))
 const aItem = (c: RegistroComida): Item => ({ alimentoId: c.alimentoId, gramos: c.gramos, cantidad: c.cantidad, unidad: c.unidad })
 const cantidadTexto = (c: Item) => (c.unidad === 'g' ? `${num(c.gramos)} g` : `${num(c.cantidad, c.cantidad % 1 ? 1 : 0)} ${c.unidad}`)
 
-export function Comida({ hoy, perfil }: { hoy: string; perfil: Perfil }) {
+export function Comida({ hoy, perfil, momentoInicial, onPerfil }: { hoy: string; perfil: Perfil; momentoInicial?: Momento; onPerfil: () => void }) {
   const [fecha, setFecha] = useState(hoy)
-  const [vista, setVista] = useState<Vista>({ tipo: 'dia' })
+  const [vista, setVista] = useState<Vista>(momentoInicial ? { tipo: 'agregar', momento: momentoInicial } : { tipo: 'dia' })
   const alDia = () => setVista({ tipo: 'dia' })
 
   switch (vista.tipo) {
@@ -31,7 +32,7 @@ export function Comida({ hoy, perfil }: { hoy: string; perfil: Perfil }) {
       return vista.tipo === 'alimento' ? <FormAlimento inicial={vista.alimento} onVolver={volver} /> : <FormReceta inicial={vista.alimento} onVolver={volver} />
     }
     case 'metas':
-      return <Metas hoy={hoy} perfil={perfil} onVolver={alDia} />
+      return <Metas hoy={hoy} perfil={perfil} onVolver={alDia} onPerfil={onPerfil} />
     case 'alimentos':
       return <MisAlimentos onVolver={alDia} onAbrir={(tipo, alimento) => setVista({ tipo, alimento })} />
     default:
@@ -61,55 +62,79 @@ function Dia({ hoy, fecha, setFecha, setVista }: { hoy: string; fecha: string; s
     if (nombre) await db.comidasFrecuentes.add({ nombre, momento, items: rs.map(aItem) })
   }
 
+  const hechas = new Set(delDia.map((c) => c.momento))
   return (
     <div className="pantalla">
       <header className="barra">
         <h1>Comida</h1>
-        <button className="link" onClick={() => setVista({ tipo: 'metas' })}>Metas</button>
+        <button className="secundario chico" onClick={() => setVista({ tipo: 'metas' })}>Mis metas</button>
       </header>
       <div className="dia-nav">
-        <button aria-label="Día anterior" onClick={() => setFecha(ayer)}>‹</button>
+        <button aria-label="Día anterior" onClick={() => setFecha(ayer)}><Icono i="atras" tam={20} /></button>
         <span>{fecha === hoy ? 'Hoy' : fechaLarga(fecha)}</span>
-        <button aria-label="Día siguiente" disabled={fecha >= hoy} onClick={() => setFecha(sumarDias(fecha, 1))}>›</button>
+        <button aria-label="Día siguiente" disabled={fecha >= hoy} onClick={() => setFecha(sumarDias(fecha, 1))}><Icono i="siguiente" tam={20} /></button>
       </div>
 
-      <section aria-label="Totales del día" className="totales">
-        <Barra etiqueta="Calorías" valor={total.kcal} meta={m?.kcal} unidad="kcal" />
-        <Barra etiqueta="Proteína" valor={total.p} meta={m?.proteinaG} unidad="g" />
-        <Barra etiqueta="Carbohidratos" valor={total.c} meta={m?.carbosG} unidad="g" />
-        <Barra etiqueta="Grasas" valor={total.g} meta={m?.grasasG} unidad="g" />
-        {!m && <p className="ayuda">Definí tus metas para ver cuánto te falta. <button className="link" onClick={() => setVista({ tipo: 'metas' })}>Calcular metas</button></p>}
+      <section className="cartel" aria-labelledby="t-total">
+        <Titulo l="comida" id="t-total" extra={m ? `Meta ${num(m.kcal)} kcal` : undefined}>Total del día</Titulo>
+        <p className="kcal">
+          {m && total.kcal <= m.kcal
+            ? <><strong>{num(m.kcal - total.kcal)}</strong><span>kcal te quedan</span></>
+            : <><strong>{num(total.kcal)}</strong><span>{m ? 'kcal, ya llegaste a tu meta' : 'kcal comidas'}</span></>}
+        </p>
+        <div className="macros">
+          <Barra etiqueta="Proteína" valor={total.p} meta={m?.proteinaG} unidad="g" />
+          <Barra etiqueta="Carbos" valor={total.c} meta={m?.carbosG} unidad="g" />
+          <Barra etiqueta="Grasas" valor={total.g} meta={m?.grasasG} unidad="g" />
+        </div>
+        <Recorrido l="comida" etiqueta="Comidas del día" estaciones={(['desayuno', 'almuerzo', 'merienda', 'cena'] as const).map((mo) => ({ nombre: NOMBRE_MOMENTO[mo], hecho: hechas.has(mo) }))} />
+        {!m && <button className="link" onClick={() => setVista({ tipo: 'metas' })}>Calcular mi meta de calorías</button>}
       </section>
 
-      {MOMENTOS.map((mo) => {
-        const rs = delDia.filter((c) => c.momento === mo)
-        const previas = deAyer.filter((c) => c.momento === mo)
-        return (
-          <section key={mo} aria-labelledby={`t-${mo}`}>
-            <h2 id={`t-${mo}`}>{NOMBRE_MOMENTO[mo]} {rs.length > 0 && <span>{num(sumar(rs).kcal)} kcal</span>}</h2>
-            {rs.length > 0 && (
-              <ul className="lista comidas">
-                {rs.map((c) => (
-                  <li key={c.id}>
-                    <span className="texto"><strong>{c.nombre}</strong><small>{cantidadTexto(c)}, {num(c.p)} g de proteína</small></span>
-                    <b>{num(c.kcal)}</b>
-                    <button className="quitar" aria-label={`Quitar ${c.nombre}`} onClick={() => borrarComida(c)}>×</button>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <div className="acciones">
-              <button className="secundario" onClick={() => setVista({ tipo: 'agregar', momento: mo })}>Agregar</button>
-              {!rs.length && previas.length > 0 && <button className="link" onClick={() => copiar(previas)}>Copiar de ayer</button>}
-              {rs.length > 0 && <button className="link" onClick={() => guardarFrecuente(mo, rs)}>Guardar como frecuente</button>}
-            </div>
-          </section>
-        )
-      })}
+      <section className="cartel" aria-labelledby="t-comidas">
+        <Titulo l="comida" id="t-comidas">Comidas</Titulo>
+        <ul className="momentos">
+          {MOMENTOS.map((mo) => {
+            const rs = delDia.filter((c) => c.momento === mo)
+            const previas = deAyer.filter((c) => c.momento === mo)
+            return (
+              <li key={mo}>
+                <div className="momento-cabeza">
+                  <strong>{NOMBRE_MOMENTO[mo]}</strong>
+                  {rs.length > 0 && <span>{num(sumar(rs).kcal)} kcal</span>}
+                  <button className="sumar" aria-label={`Agregar a ${NOMBRE_MOMENTO[mo].toLowerCase()}`} onClick={() => setVista({ tipo: 'agregar', momento: mo })}>
+                    <Icono i="sumar" tam={20} />
+                  </button>
+                </div>
+                {rs.length > 0 && (
+                  <ul className="lista comidas">
+                    {rs.map((c) => (
+                      <li key={c.id}>
+                        <span className="texto"><strong>{c.nombre}</strong><small>{cantidadTexto(c)}, {num(c.p)} g de proteína</small></span>
+                        <b>{num(c.kcal)}</b>
+                        <button className="quitar" aria-label={`Quitar ${c.nombre}`} onClick={() => borrarComida(c)}><Icono i="cerrar" tam={16} /></button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {(rs.length > 0 || previas.length > 0) && (
+                  <div className="momento-acciones">
+                    {!rs.length && <button className="link" onClick={() => copiar(previas)}>Copiar de ayer</button>}
+                    {rs.length > 0 && <button className="link" onClick={() => guardarFrecuente(mo, rs)}>Guardar como frecuente</button>}
+                  </div>
+                )}
+              </li>
+            )
+          })}
+        </ul>
+      </section>
 
       <section>
         {!delDia.length && deAyer.length > 0 && <button className="secundario" onClick={() => copiar(deAyer)}>Copiar todo el día anterior</button>}
-        <button className="link" onClick={() => setVista({ tipo: 'alimentos' })}>Mis alimentos y recetas</button>
+        <button className="fila" onClick={() => setVista({ tipo: 'alimentos' })}>
+          <span className="texto"><strong>Mis alimentos y recetas</strong><small>Cargá los que comés seguido para buscarlos en un toque</small></span>
+          <Icono i="siguiente" tam={20} />
+        </button>
       </section>
     </div>
   )
@@ -160,7 +185,7 @@ function Agregar({ fecha, momento, onVolver, onCrear }: { fecha: string; momento
           {resultados.map((a) => (
             <li key={a.id}>
               <button className="fila-simple" onClick={() => setElegido(a)}>
-                <strong>{a.favorito ? '★ ' : ''}{a.nombre}</strong>
+                <strong>{a.nombre}{a.favorito && <span className="favorito" aria-label=", favorito"><Icono i="estrella" tam={14} /></span>}</strong>
                 <small>{a.marca ? `${a.marca}. ` : ''}{num(a.por100.kcal)} kcal y {num(a.por100.p, 1)} g de proteína cada 100 g</small>
               </button>
             </li>
@@ -187,6 +212,7 @@ function Cantidad({ alimento, onCancelar, onAgregar }: { alimento: Alimento; onC
   return (
     <div className="pantalla">
       <Volver titulo={alimento.nombre} onVolver={onCancelar} />
+      <section>
       <div className="fila-campos">
         <label>Cantidad<input inputMode="decimal" value={cantidad} onChange={(e) => setCantidad(e.target.value)} /></label>
         <label>
@@ -202,7 +228,8 @@ function Cantidad({ alimento, onCancelar, onAgregar }: { alimento: Alimento; onC
         <dt>Carbohidratos</dt><dd>{num(m.c, 1)} g</dd>
         <dt>Grasas</dt><dd>{num(m.g, 1)} g</dd>
       </dl>
-      <button className="primario" disabled={!gramos} onClick={() => onAgregar({ alimentoId: alimento.id, gramos, cantidad: n, unidad })}>Agregar</button>
+      </section>
+      <button className="primario" style={linea('comida')} disabled={!gramos} onClick={() => onAgregar({ alimentoId: alimento.id, gramos, cantidad: n, unidad })}>Agregar</button>
     </div>
   )
 }
@@ -348,7 +375,7 @@ function MisAlimentos({ onVolver, onAbrir }: { onVolver: () => void; onAbrir: (t
               <strong>{a.nombre}</strong>
               <small>{a.origen === 'receta' ? 'Receta. ' : ''}{num(a.por100.kcal)} kcal cada 100 g</small>
             </button>
-            <button className="estrella" aria-pressed={a.favorito} aria-label={`Favorito: ${a.nombre}`} onClick={() => db.alimentos.update(a.id, { favorito: !a.favorito })}>★</button>
+            <button className="estrella" aria-pressed={a.favorito} aria-label={`Favorito: ${a.nombre}`} onClick={() => db.alimentos.update(a.id, { favorito: !a.favorito })}><Icono i="estrella" tam={20} /></button>
           </li>
         ))}
       </ul>
@@ -360,89 +387,28 @@ function MisAlimentos({ onVolver, onAbrir }: { onVolver: () => void; onAbrir: (t
   )
 }
 
-const ACTIVIDADES: [Actividad, string][] = [
-  ['sedentario', 'Sedentario'], ['ligero', 'Ligero (1 a 3 entrenamientos por semana)'], ['moderado', 'Moderado (3 a 5)'],
-  ['alto', 'Alto (6 a 7)'], ['muy_alto', 'Muy alto (trabajo físico y entreno)'],
-]
-
-function Metas({ hoy, perfil, onVolver }: { hoy: string; perfil: Perfil; onVolver: () => void }) {
+function Metas({ hoy, perfil, onVolver, onPerfil }: { hoy: string; perfil: Perfil; onVolver: () => void; onPerfil: () => void }) {
   const metas = useLiveQuery(() => db.metasNutricion.toArray(), [], [])
   const pesos = useLiveQuery(() => db.registrosPeso.toArray(), [], [])
   const actuales = metasEn(metas, hoy)
   const [manual, setManual] = useState<{ p: number; c: number; g: number } | null>(null)
-  const up = (c: Partial<Perfil>) => db.perfil.update('yo', c)
-
   const ultimo = [...pesos].sort((a, b) => b.fecha.localeCompare(a.fecha))[0]
   const kg = tendencia(pesos, hoy) ?? ultimo?.kg
-  const { sexo, nacimiento, alturaCm, actividad, objetivo } = perfil
-  const calc = sexo && nacimiento && alturaCm && actividad && objetivo && kg
-    ? calcularMetas({ sexo, años: edad(nacimiento, hoy), kg, cm: alturaCm, actividad, objetivo, ajusteKcal: perfil.ajusteKcal, proteinaGKg: perfil.proteinaGKg, grasasGKg: perfil.grasasGKg })
-    : null
-  const rango = objetivo && objetivo !== 'mantener' ? RANGO_AJUSTE[objetivo] : null
+  const calc = calculo({ ...perfil, kg }, hoy, perfil)
 
   return (
     <div className="pantalla form">
       <Volver titulo="Metas de nutrición" onVolver={onVolver} />
 
-      <section aria-labelledby="t-datos">
-        <h2 id="t-datos">Tus datos</h2>
-        <div className="segmentos" role="group" aria-label="Sexo">
-          {(['hombre', 'mujer'] as Sexo[]).map((s) => <button key={s} aria-pressed={sexo === s} onClick={() => up({ sexo: s })}>{s === 'hombre' ? 'Hombre' : 'Mujer'}</button>)}
+      <section aria-labelledby="t-plan">
+        <h2 id="t-plan">Calculado con tu perfil</h2>
+        {calc ? <Plan c={calc} /> : <p className="vacio">Para calcularlo falta: {faltantes(perfil, kg).join(', ')}.</p>}
+        <div className="acciones">
+          {calc && <button className="primario" onClick={() => guardarMetas({ desde: hoy, kcal: calc.kcal, proteinaG: calc.proteinaG, carbosG: calc.carbosG, grasasG: calc.grasasG, tdee: calc.tdee, origen: 'formula' })}>Usar este plan</button>}
+          <button className="secundario" onClick={onPerfil}>Editar mi perfil</button>
         </div>
-        <div className="fila-campos">
-          <label>Nacimiento<input type="date" value={nacimiento ?? ''} max={hoy} onChange={(e) => up({ nacimiento: e.target.value || undefined })} /></label>
-          <label>Altura (cm)<input key={alturaCm} inputMode="numeric" defaultValue={alturaCm ?? ''} onBlur={(e) => up({ alturaCm: decimal(e.target.value) > 100 ? decimal(e.target.value) : undefined })} /></label>
-        </div>
-        <label>
-          Actividad
-          <select value={actividad ?? ''} onChange={(e) => up({ actividad: (e.target.value || undefined) as Actividad })}>
-            <option value="">Elegí tu nivel</option>
-            {ACTIVIDADES.map(([v, t]) => <option key={v} value={v}>{t}</option>)}
-          </select>
-        </label>
-        <fieldset>
-          <legend>Objetivo</legend>
-          <div className="segmentos">
-            {([['definir', 'Definir'], ['mantener', 'Mantener'], ['volumen', 'Volumen']] as [Objetivo, string][]).map(([v, t]) => (
-              <button key={v} aria-pressed={objetivo === v} onClick={() => up({ objetivo: v, ajusteKcal: undefined })}>{t}</button>
-            ))}
-          </div>
-        </fieldset>
-        <div className="fila-campos">
-          {rango && (
-            <label>
-              {objetivo === 'definir' ? 'Déficit (kcal)' : 'Superávit (kcal)'}
-              <input key={`${objetivo}${perfil.ajusteKcal}`} type="number" inputMode="numeric" min={rango[0]} max={rango[1]} step={25} defaultValue={perfil.ajusteKcal ?? rango[2]}
-                onBlur={(e) => up({ ajusteKcal: Math.min(rango[1], Math.max(rango[0], Number(e.target.value) || rango[2])) })} />
-            </label>
-          )}
-          <label>
-            Proteína (g por kg)
-            <input key={perfil.proteinaGKg} type="number" inputMode="decimal" min={1.6} max={2.2} step={0.1} defaultValue={perfil.proteinaGKg ?? 2}
-              onBlur={(e) => up({ proteinaGKg: Math.min(2.2, Math.max(1.6, decimal(e.target.value) || 2)) })} />
-          </label>
-          <label>
-            Grasas (g por kg)
-            <input key={perfil.grasasGKg} type="number" inputMode="decimal" min={0.6} step={0.1} defaultValue={perfil.grasasGKg ?? 0.8}
-              onBlur={(e) => up({ grasasGKg: Math.max(0.6, decimal(e.target.value) || 0.8) })} />
-          </label>
-        </div>
-        <p className="ayuda">{kg ? `Se calcula con ${num(kg, 1)} kg, ${tendencia(pesos, hoy) != null ? 'tu tendencia de peso' : 'tu último pesaje'}.` : 'Registrá tu peso en Cuerpo para poder calcular.'}</p>
       </section>
 
-      {calc && (
-        <section aria-labelledby="t-calculo">
-          <h2 id="t-calculo">Cálculo</h2>
-          <dl className="datos">
-            <dt>Gasto diario estimado</dt><dd>{num(calc.tdee)} kcal</dd>
-            <dt>Meta de calorías</dt><dd>{num(calc.kcal)} kcal</dd>
-            <dt>Proteína</dt><dd>{calc.proteinaG} g</dd>
-            <dt>Carbohidratos</dt><dd>{calc.carbosG} g</dd>
-            <dt>Grasas</dt><dd>{calc.grasasG} g</dd>
-          </dl>
-          <button className="primario" onClick={() => guardarMetas({ desde: hoy, ...calc, origen: 'formula' })}>Usar estas metas</button>
-        </section>
-      )}
 
       <section aria-labelledby="t-actuales">
         <h2 id="t-actuales">Metas actuales</h2>

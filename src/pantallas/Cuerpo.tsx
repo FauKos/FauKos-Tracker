@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { db, guardarPeso, type Perfil, type RegistroMedidas } from '../db'
 import { leerKg, resumenPeso, serieTendencia } from '../logica/cuerpo'
 import { ddmmaaaa, num, signo } from '../logica/fechas'
-import { Linea } from '../ui'
+import { Linea, linea, Titulo } from '../ui'
 
 const kg = (x: number | null | undefined) => (x == null ? 'Sin datos' : `${num(x, 1)} kg`)
 const MEDIDAS: [keyof Omit<RegistroMedidas, 'id' | 'fecha'>, string][] = [
@@ -34,18 +34,18 @@ export function Cuerpo({ hoy, perfil }: { hoy: string; perfil: Perfil }) {
       <header className="barra"><h1>Cuerpo</h1></header>
 
       <section aria-labelledby="t-pesar">
-        <h2 id="t-pesar">Registrar peso</h2>
+        <Titulo l="peso" id="t-pesar">Registrar peso</Titulo>
         <p className="ayuda">Pesate a la mañana, en ayunas y después del baño. Lo que importa es la tendencia, no el número de un día.</p>
         <div className="fila-campos">
           <label>Peso (kg)<input inputMode="decimal" value={texto} placeholder={r.ultimo ? num(r.ultimo.kg, 1) : '80,0'} onChange={(e) => setTexto(e.target.value)} /></label>
           <label>Día<input type="date" value={fecha} max={hoy} onChange={(e) => e.target.value && setFecha(e.target.value)} /></label>
         </div>
-        <button className="primario" disabled={valor == null} onClick={guardar}>Guardar peso</button>
+        <button className="primario" style={linea('peso')} disabled={valor == null} onClick={guardar}>Guardar peso</button>
       </section>
 
       <section aria-labelledby="t-tendencia">
-        <h2 id="t-tendencia">Tendencia <span>{kg(r.tendencia)}</span></h2>
-        <Linea valores={serie.map((s) => s.kg)} etiqueta="Tendencia de peso de los últimos 90 días" />
+        <Titulo l="peso" id="t-tendencia" extra={kg(r.tendencia)}>Tendencia</Titulo>
+        <Linea valores={serie.map((s) => s.kg)} etiqueta="Tendencia de peso de los últimos 90 días" formato={(v) => `${num(v, 1)} kg`} />
         <dl className="datos">
           <dt>Último pesaje</dt><dd>{r.ultimo ? `${kg(r.ultimo.kg)} (${ddmmaaaa(r.ultimo.fecha).slice(0, 5)})` : 'Sin datos'}</dd>
           <dt>Cambio en 7 días</dt><dd>{r.cambio7 == null ? 'Sin datos' : `${signo(r.cambio7)} kg`}</dd>
